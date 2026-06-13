@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,7 @@
             position: absolute;
             font-size: 20px;
             color: #ff4d6d;
-            animation: fly Up 4s linear infinite;
+            animation: fly 4s linear infinite;
             bottom: -50px;
             opacity: 0;
             z-index: 1;
@@ -116,7 +116,7 @@
             position: absolute;
         }
 
-        /* Màn hình chúc mừng khi bấm "Có" */
+        /* Màn hình chúc mừng */
         .hidden {
             display: none;
         }
@@ -131,19 +131,22 @@
             100% { transform: scale(1.05); }
         }
     </style>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
-    <iframe src="https://www.youtube.com/watch?v=GhQxrCrVSyw?autoplay=1&mute=0" allow="autoplay" style="display:none"></iframe>
+    <div style="position: absolute; visibility: hidden; width: 0; height: 0;">
+        <div id="youtubePlayer"></div>
+    </div>
 
     <div class="container" id="questionBox">
         <img class="gif-img" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3B0b2I0cmN5b3V6bXN0MnB5bWZ0d3V0eTl6bW9xdmtqOHBvNHZjdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute Bear">
-        <h1 id="mainText">Will you go on a date with me tomorrow ?<br> Saying no is not an option!, my lovely Zoey 💖</h1>
+        <h1 id="mainText">Will you go on a date with me tomorrow?<br>Saying no is not an option, my lovely Zoey 💖</h1>
         <p>Think carefully, beautiful...</p>
         
         <div class="btn-group">
             <button class="btn" id="btnYes" onclick="selectYes()">Yes, I'd love to! 🥰</button>
-            <button class="btn" id="btnNo" onmouseover="moveButton()">No way 😜</button>
+            <button class="btn" id="btnNo" onmouseover="moveButton()">No wayyyy!? 😜</button>
         </div>
     </div>
 
@@ -154,41 +157,74 @@
     </div>
 
     <script>
-        // Hàm tạo hiệu ứng trái tim bay ngẫu nhiên nền web
+        let player;
+        
+        // Cấu hình trình phát nhạc ngầm từ link YouTube bạn gửi
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtubePlayer', {
+                videoId: 'GhQxrCrVSyw', // ID chuẩn bài Until I Found You bản Lyrics bạn gửi
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'GhQxrCrVSyw'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        // Hàm ép trình duyệt bật tiếng và phát nhạc khi có tương tác (bấm/chạm)
+        function forcePlayMusic() {
+            if (player && typeof player.playVideo === 'function') {
+                player.unMute();
+                player.setVolume(100);
+                player.playVideo();
+                // Gỡ bỏ sự kiện sau khi kích hoạt thành công
+                document.removeEventListener('click', forcePlayMusic);
+                document.removeEventListener('touchstart', forcePlayMusic);
+            }
+        }
+        document.addEventListener('click', forcePlayMusic);
+        document.addEventListener('touchstart', forcePlayMusic);
+
+        // Tạo hiệu ứng trái tim bay
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-pop');
             heart.innerText = '❤️';
             heart.style.left = Math.random() * 100 + "vw";
-            heart.style.animationDuration = Math.random() * 2 + 3 + "s"; // từ 3s - 5s
-            heart.style.fontSize = Math.random() * 15 + 15 + "px"; // kích thước ngẫu nhiên
+            heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+            heart.style.fontSize = Math.random() * 15 + 15 + "px";
             document.body.appendChild(heart);
             
-            // Xóa trái tim sau khi bay xong để tránh lag máy
             setTimeout(() => {
                 heart.remove();
             }, 5000);
         }
-        setInterval(createHeart, 300); // Cứ 0.3s tạo 1 trái tim
+        setInterval(createHeart, 300);
 
-        // Hàm làm nút "Không" chạy trốn khi rê chuột vào (hoặc bấm vào trên điện thoại)
+        // Hàm làm nút "Không" chạy trốn
         function moveButton() {
             const btnNo = document.getElementById('btnNo');
-            
-            // Tính toán khoảng cách giới hạn để nút không chạy ra khỏi màn hình
             const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 50);
             const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 50);
             
-            // Set vị trí mới cho nút
             btnNo.style.position = 'fixed';
             btnNo.style.left = x + 'px';
             btnNo.style.top = y + 'px';
         }
 
-        // Hỗ trợ thêm cho điện thoại khi chạm vào nút "Không"
+        // Hỗ trợ điện thoại khi cố ấn hoặc chạm hụt nút "No"
         document.getElementById('btnNo').addEventListener('touchstart', function(e) {
             e.preventDefault();
             moveButton();
+            forcePlayMusic(); // Kích hoạt nhạc luôn khi chạm hụt
         });
 
         // Hàm xử lý khi bấm nút "Có"
@@ -196,7 +232,13 @@
             document.getElementById('questionBox').classList.add('hidden');
             document.getElementById('celebrateBox').classList.remove('hidden');
             
-            // Tăng cường hiệu ứng trái tim khi đồng ý
+            // Đảm bảo nhạc chắc chắn bật tiếng khi bấm Yes
+            if (player) {
+                player.unMute();
+                player.setVolume(100);
+                player.playVideo();
+            }
+            
             for(let i=0; i<30; i++) {
                 setTimeout(createHeart, i * 50);
             }
