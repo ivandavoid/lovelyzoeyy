@@ -114,7 +114,7 @@
             background-color: #6c757d;
             color: white;
             position: absolute;
-            transition: left 0.1s ease, top 0.1s ease; /* Tạo hiệu ứng nảy mượt mà */
+            transition: left 0.1s ease, top 0.1s ease;
         }
 
         /* Màn hình chúc mừng */
@@ -132,13 +132,11 @@
             100% { transform: scale(1.05); }
         }
     </style>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
-    <div style="position: absolute; visibility: hidden; width: 0; height: 0;">
-        <div id="youtubePlayer"></div>
-    </div>
+    <div id="musicContainer" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+        </div>
 
     <div class="container" id="questionBox">
         <img class="gif-img" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3B0b2I0cmN5b3V6bXN0MnB5bWZ0d3V0eTl6bW9xdmtqOHBvNHZjdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute Bear">
@@ -158,39 +156,24 @@
     </div>
 
     <script>
-        let player;
-        
-        // Cấu hình trình phát nhạc ngầm từ link YouTube bạn gửi
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtubePlayer', {
-                videoId: 'GhQxrCrVSyw', // ID chuẩn bài Until I Found You bản Lyrics bạn gửi
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'GhQxrCrVSyw'
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
+        let musicStarted = false;
 
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
-
-        // Hàm ép trình duyệt bật tiếng và phát nhạc khi có tương tác (bấm/chạm)
+        // Hàm chèn nhạc thông minh bằng cách tiêm Iframe ẩn sâu, chặn tính năng mở toàn màn hình (playsinline=1)
         function forcePlayMusic() {
-            if (player && typeof player.playVideo === 'function') {
-                player.unMute();
-                player.setVolume(100);
-                player.playVideo();
-                // Gỡ bỏ sự kiện sau khi kích hoạt thành công
-                document.removeEventListener('click', forcePlayMusic);
-                document.removeEventListener('touchstart', forcePlayMusic);
-            }
+            if (musicStarted) return;
+            
+            const container = document.getElementById('musicContainer');
+            // Cấu hình mã nhúng chống bung màn hình trên điện thoại
+            container.innerHTML = `<iframe src="https://www.youtube.com/embed/GhQxrCrVSyw?autoplay=1&mute=0&loop=1&playlist=GhQxrCrVSyw&playsinline=1&controls=0&disablekb=1&fs=0" allow="autoplay"></iframe>`;
+            
+            musicStarted = true;
+            
+            // Gỡ bỏ sự kiện sau khi kích hoạt thành công
+            document.removeEventListener('click', forcePlayMusic);
+            document.removeEventListener('touchstart', forcePlayMusic);
         }
+
+        // Kích hoạt nhạc khi chạm bất kỳ đâu ngoài màn hình
         document.addEventListener('click', forcePlayMusic);
         document.addEventListener('touchstart', forcePlayMusic);
 
@@ -213,37 +196,30 @@
         // Hàm làm nút "Không" chạy trốn TRONG VÙNG GIỚI HẠN AN TOÀN
         function moveButton() {
             const btnNo = document.getElementById('btnNo');
-            
-            // Thiết lập khoảng cách an toàn so với mép màn hình (tránh bị tràn, mất góc)
             const padding = 50; 
             
-            // Tính toán vùng giới hạn theo chiều ngang (X)
             const minX = padding;
             const maxX = window.innerWidth - btnNo.offsetWidth - padding;
             
-            // Tính toán vùng giới hạn theo chiều dọc (Y) - Chỉ cho chạy ở nửa dưới màn hình
             const minY = window.innerHeight * 0.45; 
             const maxY = window.innerHeight - btnNo.offsetHeight - padding;
             
-            // Tạo tọa độ ngẫu nhiên nằm chuẩn trong khung an toàn
             let randomX = minX + Math.random() * (maxX - minX);
             let randomY = minY + Math.random() * (maxY - minY);
             
-            // Chống lỗi tọa độ bị âm hoặc vượt quá giới hạn trên các thiết bị siêu nhỏ
             randomX = Math.max(minX, Math.min(randomX, maxX));
             randomY = Math.max(minY, Math.min(randomY, maxY));
             
-            // Gán vị trí mới dạng fixed để không bị ảnh hưởng bởi cấu trúc thẻ cha
             btnNo.style.position = 'fixed';
             btnNo.style.left = randomX + 'px';
             btnNo.style.top = randomY + 'px';
         }
 
-        // Hỗ trợ điện thoại khi cố ấn hoặc chạm hụt nút "No"
+        // Hỗ trợ điện thoại khi cố chạm hoặc bấm nút "No"
         document.getElementById('btnNo').addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            moveButton();
-            forcePlayMusic(); // Kích hoạt nhạc luôn khi chạm hụt
+            e.preventDefault(); // Ngăn trình duyệt kích hoạt hiệu ứng click ảo gây bung video
+            moveButton();       // Di chuyển nút đi nơi khác ngay lập tức
+            forcePlayMusic();   // Phát nhạc ngầm
         });
 
         // Hàm xử lý khi bấm nút "Có"
@@ -251,12 +227,7 @@
             document.getElementById('questionBox').classList.add('hidden');
             document.getElementById('celebrateBox').classList.remove('hidden');
             
-            // Đảm bảo nhạc chắc chắn bật tiếng khi bấm Yes
-            if (player) {
-                player.unMute();
-                player.setVolume(100);
-                player.playVideo();
-            }
+            forcePlayMusic(); // Chắc chắn nhạc sẽ phát khi đồng ý
             
             for(let i=0; i<30; i++) {
                 setTimeout(createHeart, i * 50);
