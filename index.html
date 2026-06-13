@@ -114,6 +114,7 @@
             background-color: #6c757d;
             color: white;
             position: absolute;
+            transition: left 0.1s ease, top 0.1s ease; /* Tạo hiệu ứng nảy mượt mà */
         }
 
         /* Màn hình chúc mừng */
@@ -209,15 +210,33 @@
         }
         setInterval(createHeart, 300);
 
-        // Hàm làm nút "Không" chạy trốn
+        // Hàm làm nút "Không" chạy trốn TRONG VÙNG GIỚI HẠN AN TOÀN
         function moveButton() {
             const btnNo = document.getElementById('btnNo');
-            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 50);
-            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 50);
             
+            // Thiết lập khoảng cách an toàn so với mép màn hình (tránh bị tràn, mất góc)
+            const padding = 50; 
+            
+            // Tính toán vùng giới hạn theo chiều ngang (X)
+            const minX = padding;
+            const maxX = window.innerWidth - btnNo.offsetWidth - padding;
+            
+            // Tính toán vùng giới hạn theo chiều dọc (Y) - Chỉ cho chạy ở nửa dưới màn hình
+            const minY = window.innerHeight * 0.45; 
+            const maxY = window.innerHeight - btnNo.offsetHeight - padding;
+            
+            // Tạo tọa độ ngẫu nhiên nằm chuẩn trong khung an toàn
+            let randomX = minX + Math.random() * (maxX - minX);
+            let randomY = minY + Math.random() * (maxY - minY);
+            
+            // Chống lỗi tọa độ bị âm hoặc vượt quá giới hạn trên các thiết bị siêu nhỏ
+            randomX = Math.max(minX, Math.min(randomX, maxX));
+            randomY = Math.max(minY, Math.min(randomY, maxY));
+            
+            // Gán vị trí mới dạng fixed để không bị ảnh hưởng bởi cấu trúc thẻ cha
             btnNo.style.position = 'fixed';
-            btnNo.style.left = x + 'px';
-            btnNo.style.top = y + 'px';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
         }
 
         // Hỗ trợ điện thoại khi cố ấn hoặc chạm hụt nút "No"
