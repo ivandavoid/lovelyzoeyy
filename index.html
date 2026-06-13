@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear lovely Zoey 💗</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Hiệu ứng trái tim bay */
+        .heart-pop {
+            position: absolute;
+            font-size: 20px;
+            color: #ff4d6d;
+            animation: fly Up 4s linear infinite;
+            bottom: -50px;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        @keyframes fly {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-105vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Hộp nội dung chính */
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            z-index: 10;
+            border: 2px solid #fff;
+            transition: all 0.5s ease;
+        }
+
+        .gif-img {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 24px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* Khu vực nút bấm */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            height: 50px;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #btnYes {
+            background-color: #ff4d6d;
+            color: white;
+        }
+
+        #btnYes:hover {
+            transform: scale(1.1);
+            background-color: #ff758f;
+        }
+
+        #btnNo {
+            background-color: #6c757d;
+            color: white;
+            position: absolute;
+        }
+
+        /* Màn hình chúc mừng khi bấm "Có" */
+        .hidden {
+            display: none;
+        }
+
+        .celebrate h1 {
+            font-size: 28px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <iframe src="https://www.youtube.com/embed/P8Z8S08Ym7Q?autoplay=1&mute=0" allow="autoplay" style="display:none"></iframe>
+
+    <div class="container" id="questionBox">
+        <img class="gif-img" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3B0b2I0cmN5b3V6bXN0MnB5bWZ0d3V0eTl6bW9xdmtqOHBvNHZjdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute Bear">
+        <h1 id="mainText">Will you go on a date with me tomorrow ?<br> Saying no is not an option!, my lovely Zoey 💖</h1>
+        <p>Think carefully, beautiful...</p>
+        
+        <div class="btn-group">
+            <button class="btn" id="btnYes" onclick="selectYes()">Yes, I'd love to! 🥰</button>
+            <button class="btn" id="btnNo" onmouseover="moveButton()">No way 😜</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="celebrateBox">
+        <img class="gif-img" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGFhOHBteXNrN3Q3YXF4OXE1MmFubW9vMzgxMGs2dmdmZG4zZGYzOSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/fUQ4rhUZJYiQsas6WD/giphy.gif" alt="Happy Bear">
+        <h1>Yayyyy! See you tomorrow sweetie :3</h1>
+        <p>Can't wait to see your beautiful smile :>></p>
+    </div>
+
+    <script>
+        // Hàm tạo hiệu ứng trái tim bay ngẫu nhiên nền web
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-pop');
+            heart.innerText = '❤️';
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 2 + 3 + "s"; // từ 3s - 5s
+            heart.style.fontSize = Math.random() * 15 + 15 + "px"; // kích thước ngẫu nhiên
+            document.body.appendChild(heart);
+            
+            // Xóa trái tim sau khi bay xong để tránh lag máy
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+        setInterval(createHeart, 300); // Cứ 0.3s tạo 1 trái tim
+
+        // Hàm làm nút "Không" chạy trốn khi rê chuột vào (hoặc bấm vào trên điện thoại)
+        function moveButton() {
+            const btnNo = document.getElementById('btnNo');
+            
+            // Tính toán khoảng cách giới hạn để nút không chạy ra khỏi màn hình
+            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 50);
+            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 50);
+            
+            // Set vị trí mới cho nút
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = x + 'px';
+            btnNo.style.top = y + 'px';
+        }
+
+        // Hỗ trợ thêm cho điện thoại khi chạm vào nút "Không"
+        document.getElementById('btnNo').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveButton();
+        });
+
+        // Hàm xử lý khi bấm nút "Có"
+        function selectYes() {
+            document.getElementById('questionBox').classList.add('hidden');
+            document.getElementById('celebrateBox').classList.remove('hidden');
+            
+            // Tăng cường hiệu ứng trái tim khi đồng ý
+            for(let i=0; i<30; i++) {
+                setTimeout(createHeart, i * 50);
+            }
+        }
+    </script>
+</body>
+</html>
